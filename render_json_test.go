@@ -1,7 +1,7 @@
 package render
 
 import (
-	"encoding/json"
+	jsoniter "github.com/json-iterator/go"
 	"math"
 	"net/http"
 	"net/http/httptest"
@@ -87,7 +87,7 @@ func TestJSONConsumeIndented(t *testing.T) {
 	h.ServeHTTP(res, req)
 
 	var output Greeting
-	err := json.Unmarshal(res.Body.Bytes(), &output)
+	err := jsonx.Unmarshal(res.Body.Bytes(), &output)
 	expectNil(t, err)
 	expectNil(t, renErr)
 	expect(t, output.One, "hello")
