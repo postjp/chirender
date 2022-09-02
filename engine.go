@@ -2,12 +2,13 @@ package render
 
 import (
 	"bytes"
-	"encoding/json"
+	jsoniter "github.com/json-iterator/go"
 	"encoding/xml"
 	"html/template"
 	"io"
 	"net/http"
 )
+var jsonx = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Engine is the generic interface for all responses.
 type Engine interface {
@@ -111,7 +112,7 @@ func (j JSON) Render(w io.Writer, v interface{}) error {
 	}
 
 	var buf bytes.Buffer
-	var encoder = json.NewEncoder(&buf)
+	var encoder = jsonx.NewEncoder(&buf)
 	encoder.SetEscapeHTML(!j.UnEscapeHTML)
 	if j.Indent {
 		encoder.SetIndent("", "  ")
@@ -130,7 +131,7 @@ func (j JSON) Render(w io.Writer, v interface{}) error {
 		_, _ = w.Write(j.Prefix)
 	}
 
-	// Remove the newline that json.Encode injects when not indenting the output.
+	// Remove the newline that jsonx.Encode injects when not indenting the output.
 	if !j.Indent {
 		output = bytes.TrimSuffix(output, []byte("\n"))
 	}
@@ -147,7 +148,7 @@ func (j JSON) renderStreamingJSON(w io.Writer, v interface{}) error {
 		_, _ = w.Write(j.Prefix)
 	}
 
-	encoder := json.NewEncoder(w)
+	encoder := jsonx.NewEncoder(w)
 	encoder.SetEscapeHTML(!j.UnEscapeHTML)
 	if j.Indent {
 		encoder.SetIndent("", "  ")
@@ -162,9 +163,9 @@ func (j JSONP) Render(w io.Writer, v interface{}) error {
 	var err error
 
 	if j.Indent {
-		result, err = json.MarshalIndent(v, "", "  ")
+		result, err = jsonx.MarshalIndent(v, "", "  ")
 	} else {
-		result, err = json.Marshal(v)
+		result, err = jsonx.Marshal(v)
 	}
 	if err != nil {
 		return err
