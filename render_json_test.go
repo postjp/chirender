@@ -1,7 +1,6 @@
 package render
 
 import (
-	jsoniter "github.com/json-iterator/go"
 	"math"
 	"net/http"
 	"net/http/httptest"
